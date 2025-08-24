@@ -1,0 +1,36 @@
+{
+  "name": "seopost-cli",
+  "version": "0.0.1",
+  "license": "MIT",
+  "description": "A CLI tool for generating SEO-optimized blog articles using AI agents",
+  "main": "dist/index.js",
+  "bin": {
+    "seopost-cli": "dist/index.js"
+  },
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "m2m": "node merge-to-md.mjs",
+    "dev": "ts-node-dev src/index.ts",
+    "build": "yarn m2m && tsc -p .",
+    "publsh": "npm run publish"
+  },
+  "keywords": [
+    "blog",
+    "seo",
+    "ai",
+    "cli",
+    "content-generation"
+  ],
+  "dependencies": {
+    "async-agents-core": "^0.0.10",
+    "dotenv": "^17.2.1",
+    "openai": "^5.12.1",
+    "uuid": "^11.1.0",
+    "commander": "^14.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.1.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.9.2"
+  }
+}
