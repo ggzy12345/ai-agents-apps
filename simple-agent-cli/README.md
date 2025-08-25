@@ -24,49 +24,36 @@ debug = true
 output = 'generated.md'
 
 [client]
-base_url = "https://generativelanguage.googleapis.com/v1beta/openai/"
-model_name = "gemini-2.5-flash"
+base_url = "http://192.168.68.109:1234/v1"
+model_name = "qwen/qwen3-1.7b"
 
 [manager]
-#termination_word = "terminate"
-max_rounds = 3
-
-prompt_template = "Create an SEO-optimized blog post about {topic} with a focus on best practices"
-
-[[agents]]
-name = "seo_analyst"
-system_message = """
-You are an SEO analyst. Analyze keywords, competition, and suggest topics.
-Provide:
-1. Primary keyword and secondary keywords
-2. Search volume estimates
-3. Content angle suggestions
-4. Competitor analysis
-5. The original request of the user
+termination_word = "terminate"
+max_rounds = 6
+selector_prompt = """
+Select an agent to perform task.
+        [writer, reviewer]
+Read the above conversation, then select an agent from [writer, reviewer] to perform the next task.
+Only select one agent.
+Only say the agent, nothing else
 """
 
 [[agents]]
-name = "content_writer"
+name = "writer"
 system_message = """
-You are a content writer. Create engaging, SEO-friendly blog posts in markdown format.
-Guidelines:
-- Use headings with keywords
-- Write 300-500 words
-- Include internal links to other blog posts
-- Use bullet points and numbered lists
-- Add meta description
+You are a writer. Please write article. If there is feedback, do the rework.
 """
 
 [[agents]]
-name = "optimizer"
+name = "reviewer"
 system_message = """
-You are an SEO optimizer. Review and improve content for:
-- Keyword density and placement
-- Readability score
-- Meta tags optimization
-- Internal linking structure
-- Content freshness
+You are a reviewer. 
+        Provide a very short improvement suggestion for the article. 
+        If you think it is good enough, say: terminate
+        Please at least have two rounds of the reviews.
+        If you think it is not good enough, provide a suggestion to improve the article
 """
+
 
 ```
 
