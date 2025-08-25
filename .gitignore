@@ -1,3 +1,6 @@
 seopost-cli/.env
 seopost-cli/node_modules/
 seopost-cli/dist/
+simple-agent-cli/node_modules/
+simple-agent-cli/.env
+simple-agent-cli/dist/

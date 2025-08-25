@@ -1,0 +1,33 @@
+debug = true
+output = 'generated.md'
+
+[client]
+base_url = "http://192.168.68.109:1234/v1"
+model_name = "qwen/qwen3-1.7b"
+
+[manager]
+termination_word = "terminate"
+max_rounds = 6
+selector_prompt = """
+Select an agent to perform task.
+        [writer, reviewer]
+Read the above conversation, then select an agent from [writer, reviewer] to perform the next task.
+Only select one agent.
+Only say the agent, nothing else
+"""
+
+[[agents]]
+name = "writer"
+system_message = """
+You are a writer. Please write article. If there is feedback, do the rework.
+"""
+
+[[agents]]
+name = "reviewer"
+system_message = """
+You are a reviewer. 
+        Provide a very short improvement suggestion for the article. 
+        If you think it is good enough, say: terminate
+        Please at least have two rounds of the reviews.
+        If you think it is not good enough, provide a suggestion to improve the article
+"""
