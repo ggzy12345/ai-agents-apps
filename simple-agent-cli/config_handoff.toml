@@ -1,0 +1,26 @@
+debug = true
+output = 'generated.md'
+
+[client]
+base_url = "http://192.168.68.109:1234/v1"
+model_name = "qwen/qwen3-1.7b"
+
+[manager]
+termination_word = "terminate"
+max_rounds = 3
+
+[[agents]]
+name = "writer"
+hand_offs = ["reviewer"]
+system_message = """
+You are a writer. Please write article. If there is feedback, do the rework.
+"""
+
+[[agents]]
+name = "reviewer"
+hand_offs = ["writer"]
+system_message = """
+/no_think You are a reviewer. 
+        Provide a very short improvement suggestion for the article. 
+        If you think it is not good enough, provide a suggestion to improve the article.
+"""
