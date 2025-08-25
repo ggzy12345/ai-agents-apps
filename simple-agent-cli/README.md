@@ -89,14 +89,8 @@ simple-agent-cli --config config_roundrobin.toml "Write a very short article abo
 **Environment Variables**
 You can set below environment variables instead of using the command line option:
 bash
+```
 export API_KEY=your_api_key
 export BASE_URL=your_base_url
 export MODEL_NAME=your_model_name
-
-seopost-cli "React Performance Optimization Techniques"
-seopost-cli "React Performance Optimization Techniques" \
-  --output ./my-article.md \
-  --debug \
-  --api-key YOUR_API_KEY \
-  --base-url 'http://192.168.68.109:1234/v1' \
-  --model-name 'qwen/qwen3-1.7b'
+```
