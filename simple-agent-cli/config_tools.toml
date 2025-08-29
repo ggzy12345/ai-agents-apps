@@ -1,0 +1,21 @@
+debug = true
+
+[client]
+base_url = "http://192.168.68.108:1234/v1"
+model_name = "qwen/qwen3-1.7b"
+
+[manager]
+termination_word = "terminate"
+max_rounds = 5
+
+[[agents]]
+name = "writer"
+system_message = """/no_think You are a writer. Please write article. 
+        You work with recorder to get the job done.
+        If the recorder called save_to_file, please only say: terminate"""
+
+[[agents]]
+name = "recorder"
+system_message = """/no_think You are the recorder. 
+When recieving message call save_to_file tool to save the content to a file."""
+tools = ["tools.cjs#saveTool", "tools.cjs#otherTool"]

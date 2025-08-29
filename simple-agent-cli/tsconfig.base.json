@@ -2,12 +2,12 @@
     "compilerOptions": {
         "baseUrl": ".",
         "target": "ES2021",
-        "module": "CommonJS",
+        "module": "ESNext",
+        "moduleResolution": "node",
         "lib": [
             "ES2021",
             "DOM"
         ],
-        "moduleResolution": "Node",
         "declaration": true,
         "declarationMap": true,
         "sourceMap": true,

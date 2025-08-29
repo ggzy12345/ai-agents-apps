@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { AgentManager, Agent, IContext, IClientSdk, ModelClient, getRound, END_USER_NAME, AGENT_MANAGER_NAME, TYPE_NEW, MODEL_INBOUND_ROLE, getMessages } from "async-agents-core";
+import { AgentManager, Agent, IContext, IClientSdk, ModelClient, getRound, END_USER_NAME, AGENT_MANAGER_NAME, TYPE_NEW, MODEL_INBOUND_ROLE, getMessages, ITool } from "async-agents-core";
 import OpenAI from "openai";
 import { Command } from 'commander';
 import * as fs from 'fs';
@@ -12,6 +12,7 @@ interface AgentConfig {
     system_message: string;
     model_name?: string;
     hand_offs?: string[];
+    tools?: ITool[];
 }
 
 interface ManagerConfig {
@@ -34,18 +35,69 @@ interface Config {
     prompt_template?: string;
 
 }
-
 const program = new Command();
+
+async function resolveTools(tools?: (string | ITool)[], configPath?: string): Promise<ITool[]> {
+    if (!tools) return [];
+
+    const configDir = configPath ? path.dirname(configPath) : process.cwd();
+    const results: ITool[] = [];
+
+    for (const tool of tools) {
+        // If it's already an ITool object, just add it
+        if (typeof tool !== 'string') {
+            results.push(tool);
+            continue;
+        }
+
+        // Handle JavaScript file references (file.js#exportName)
+        const [file, exportName] = tool.split("#");
+
+        // Ensure we're only loading JavaScript files
+        if (!file.endsWith('.cjs')) {
+            console.error(`Tool file ${file} must be a JavaScript file (.cjs)`);
+            process.exit(1);
+        }
+
+        const absPath = path.resolve(configDir, file);
+
+        try {
+            const mod = await import(absPath);
+            const toolObj = exportName ? mod[exportName] : mod.default;
+
+            if (typeof toolObj !== "object" || !toolObj.execute) {
+                throw new Error(`Tool ${tool} is not a valid ITool object`);
+            }
+
+            results.push(toolObj);
+        } catch (error) {
+            console.error(`Error loading tool ${tool}:`, error);
+            throw error;
+        }
+    }
+    return results;
+}
 
 async function loadConfig(configPath: string): Promise<Config> {
     try {
-        const configFile = fs.readFileSync(configPath, 'utf-8');
-        return toml.parse(configFile);
+        const configFile = fs.readFileSync(configPath, "utf-8");
+        const raw = toml.parse(configFile);
+
+        if (raw.agents) {
+            for (const agent of raw.agents) {
+                if (agent.tools) {
+                    agent.tools = await resolveTools(agent.tools, configPath);
+                }
+            }
+        }
+        return raw;
     } catch (error) {
         console.error(`Error loading config file: ${error}`);
         process.exit(1);
     }
 }
+
+
 
 async function generate(topic: string, options: any) {
     try {
@@ -127,7 +179,8 @@ async function generate(topic: string, options: any) {
                         clientSdk,
                         modelName: agentConfig.model_name || modelName
                     }),
-                    systemMessage: agentConfig.system_message
+                    systemMessage: agentConfig.system_message,
+                    tools: agentConfig.tools
                 }));
                 agentNames.push(agentConfig.name);
             });

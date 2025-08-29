@@ -8,7 +8,7 @@ model_name = "qwen/qwen3-1.7b"
 
 [manager]
 termination_word = "DOCS_COMPLETE"
-max_rounds = 8
+max_rounds = 16
 selector_prompt = """
 Select the most appropriate agent to continue the technical documentation process.
 Available agents: [requirements_analyzer, api_documenter, tutorial_writer, code_examples, quality_reviewer]
