@@ -1,6 +1,6 @@
 {
   "name": "simple-agent-cli",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "license": "MIT",
   "description": "A CLI tool for async ai agents",
   "repository": {
@@ -11,10 +11,11 @@
   "bin": {
     "simple-agent-cli": "dist/src/index.js"
   },
+  "type": "module",
   "types": "dist/src/index.d.ts",
   "scripts": {
     "m2m": "node merge-to-md.mjs",
-    "dev": "ts-node-dev src/index.ts",
+    "dev": "node --loader ts-node/esm src/index.ts",
     "build": "yarn m2m && tsc -p .",
     "publsh": "npm run publish"
   },
@@ -34,7 +35,7 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "@types/node": "^24.1.0",
+    "@types/node": "^24.3.0",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.2"
   }
