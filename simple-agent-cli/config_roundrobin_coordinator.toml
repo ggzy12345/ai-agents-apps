@@ -1,0 +1,39 @@
+debug = true
+output = 'generated.md'
+
+[client]
+base_url = "http://192.168.68.102:8080/v1"
+model_name = "openai/gpt-oss-20b"
+
+[manager]
+termination_word = "terminate"
+max_rounds = 10
+
+[[agents]]
+name = "writer"
+system_message = """
+Please think as less as possible. 
+You are the member of a team with [writer, reviewer and coordinator]. Yourself is the [reviewer].
+As a writer: 
+Please write very short article. If there is feedback, do the rework.
+"""
+
+[[agents]]
+name = "reviewer"
+system_message = """
+Please think as less as possible. 
+You are the member of a team with [writer, reviewer and coordinator]. Yourself is the [reviewer].
+As a reviewer: 
+        Provide a very short improvement suggestion for the article. 
+        If there is no improvement in needed, say: 'no comments'. 
+"""
+
+[[agents]]
+name = "coordinator"
+system_message = """
+Please think as less as possible. 
+You are the member of a team with [writer, reviewer and coordinator]. Yourself is the [coordinator].
+As a coordinator:
+        If reviewer says 'no comments', say: terminate 
+        Otherwise echo the [reviewer]'s message.
+"""
