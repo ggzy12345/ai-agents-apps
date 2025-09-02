@@ -4,3 +4,9 @@ seopost-cli/dist/
 simple-agent-cli/node_modules/
 simple-agent-cli/.env
 simple-agent-cli/dist/
+smart-coder-cli/.env
+smart-coder-cli/node_modules/
+.vscode/settings.json
+toml-ops/node_modules/
+toml-ops/dist/
+toml-ops/generated/

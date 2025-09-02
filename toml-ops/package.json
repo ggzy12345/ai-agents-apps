@@ -1,0 +1,41 @@
+{
+    "name": "toml-ops",
+    "version": "0.0.1",
+    "license": "MIT",
+    "description": "CLI to generate and run Ansible playbooks from TOML",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ggzy12345/ai-agents-apps.git"
+    },
+    "main": "dist/src/index.js",
+    "bin": {
+        "toml-ops": "dist/src/index.js"
+    },
+    "type": "module",
+    "types": "dist/src/index.d.ts",
+    "scripts": {
+        "m2m": "node merge-to-md.mjs",
+        "dev": "node --loader ts-node/esm src/index.ts",
+        "build": "yarn m2m && tsc -p .",
+        "publsh": "npm run publish"
+    },
+    "keywords": [
+        "javascript",
+        "typescript",
+        "ci",
+        "cd",
+        "cli",
+        "home-lab"
+    ],
+    "dependencies": {
+        "commander": "^14.0.0",
+        "dotenv": "^17.2.1",
+        "yaml": "^2.3.0",
+        "toml": "^3.0.0"
+    },
+    "devDependencies": {
+        "@types/node": "^24.3.0",
+        "ts-node-dev": "^2.0.0",
+        "typescript": "^5.9.2"
+    }
+}

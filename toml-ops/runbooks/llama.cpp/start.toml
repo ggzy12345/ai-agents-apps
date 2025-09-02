@@ -1,0 +1,29 @@
+name = "llama-server-start"
+description = "Start llama-server on multiple hosts with per-host SSH overrides"
+debug = true
+
+hosts = [
+    { addr = "192.168.67.112" },
+    #   { addr = "192.168.67.113", env = { user = "admin", become = false } },
+]
+
+[env]
+user = "admin"
+ssh_key = "~/.ssh/id_rsa"
+python = "/usr/bin/python3"
+become = false
+
+[[steps]]
+name = "Check if llama-server is running"
+command = "pgrep -f 'llama-server' || echo 'No processes found'"
+become = false
+
+[[steps]]
+name = "Start llama-server"
+command = "nohup /opt/homebrew/bin/llama-server --host 0.0.0.0 -hf ggml-org/gpt-oss-20b-GGUF --n-cpu-moe 12 -c 32768 --jinja --no-mmap > llama-server.log 2>&1 &"
+become = false
+
+[[steps]]
+name = "Show running PID"
+command = "pgrep -fl 'llama-server' || echo 'No processes found'"
+become = false

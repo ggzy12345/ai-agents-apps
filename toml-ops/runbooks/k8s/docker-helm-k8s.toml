@@ -1,0 +1,43 @@
+name = "app-deploy"
+description = "Deploy application using Helm, kubectl, and Docker"
+
+hosts = [
+    { addr = "192.168.67.112" },
+    { addr = "192.168.67.113", env = { user = "admin", ssh_key = "~/.ssh/admin_id_rsa" } },
+]
+
+[env]
+user = "admin"
+ssh_key = "~/.ssh/id_rsa"
+python = "/usr/bin/python3"
+become = true
+
+[[steps]]
+name = "Pull latest Docker image"
+command = "docker pull myorg/myapp:latest"
+become = true
+
+[[steps]]
+name = "Stop old container if exists"
+command = "docker rm -f myapp || true"
+become = true
+
+[[steps]]
+name = "Run new Docker container"
+command = "docker run -d --name myapp -p 8080:8080 myorg/myapp:latest"
+become = true
+
+[[steps]]
+name = "Deploy Helm chart"
+command = "helm upgrade myapp ./chart --install --namespace prod --values values-prod.yaml"
+become = false
+
+[[steps]]
+name = "Apply Kubernetes manifests"
+command = "kubectl apply -f k8s/"
+become = false
+
+[[steps]]
+name = "Verify deployment"
+command = "kubectl get pods -n prod -l app=myapp"
+become = false
