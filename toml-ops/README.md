@@ -96,10 +96,7 @@ toml-ops run runbook.toml -o ./ansible-files
 
 This tool dramatically enhances AI agent capabilities by:
 
-    **Simplified Interface**: AI agents can generate TOML configurations instead of complex Ansible playbooks
-
-    **Structured Output**: Consistent format that agents can easily parse and generate
-
-    **Powerful Execution**: Converts simple declarations into robust infrastructure operations
-
-    **Safe Abstraction**: Agents don't need to understand Ansible internals to perform complex operations
+- **Simplified Interface**: AI agents can generate TOML configurations instead of complex Ansible playbooks
+- **Structured Output**: Consistent format that agents can easily parse and generate
+- **Powerful Execution**: Converts simple declarations into robust infrastructure operations
+- **Safe Abstraction**: Agents don't need to understand Ansible internals to perform complex operations
