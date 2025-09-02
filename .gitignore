@@ -10,3 +10,4 @@ smart-coder-cli/node_modules/
 toml-ops/node_modules/
 toml-ops/dist/
 toml-ops/generated/
+toml-ops/runbooks/llama.cpp/generated/
