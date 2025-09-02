@@ -1,0 +1,23 @@
+name = "llama-server-stop"
+description = "Stop llama-server on remote host(s)"
+
+hosts = [
+    { addr = "192.168.67.112" },
+    #   { addr = "192.168.67.113", env = { user = "admin", become = false } },
+]
+
+[env]
+user = "admin"
+ssh_key = "~/.ssh/id_rsa"
+python = "/usr/bin/python3"
+become = false
+
+[[steps]]
+name = "Stop llama-server via script"
+command = "~/stop.sh"
+become = false
+
+[[steps]]
+name = "Verify llama-server stopped"
+command = "pgrep -fl 'llama-server' || echo 'No processes found'"
+become = false
