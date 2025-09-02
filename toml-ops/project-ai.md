@@ -10,6 +10,7 @@ Dependencies:
 
 ## File: src/index.ts
 ```ts
+#!/usr/bin/env node
 import fs from 'fs';
 import path from 'path';
 import toml from 'toml';
