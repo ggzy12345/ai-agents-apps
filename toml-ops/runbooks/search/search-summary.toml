@@ -1,0 +1,20 @@
+name = "search-summary"
+description = "Start search summary"
+debug = true
+
+hosts = [{ addr = "localhost", env = { become = false } }]
+
+[env]
+python = "/usr/bin/python3"
+
+[[steps]]
+name = "run google search query"
+command = "node /home/peter/Codes/git/gitlab1/ai-agents-apps/tools/search-run.mjs"
+
+[[steps]]
+name = "process and display results"
+command = "echo {{ result.stdout | to_json }} | jq -r '.[].link'"
+
+[[steps]]
+name = "show message"
+msg = "{{ result.stdout }}"

@@ -9,8 +9,10 @@ export type HostEntry = { addr: string; env?: Env };
 
 export type Step = {
     name: string;
-    command: string;
+    command?: string;
     become?: boolean;
+    stdin?: string;
+    msg?: string;
 };
 
 export type RunbookToml = {

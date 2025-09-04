@@ -25,44 +25,57 @@ export function generateInventory(tomlData: RunbookToml): string {
         const addr = host.addr;
         const hostEnv = host.env || {};
         const env: Env = { ...tomlData.env, ...hostEnv };
-        inventory.push(
-            `${addr} ansible_user=${env.user} ansible_ssh_private_key_file=${env.ssh_key} ansible_python_interpreter=${env.python} ansible_become=${env.become}`
-        );
+        if (addr === 'localhost') {
+            inventory.push(
+                `${addr} ansible_connection=local ansible_python_interpreter=${env.python} ansible_become=${env.become}`
+            );
+        } else {
+            inventory.push(
+                `${addr} ansible_user=${env.user} ansible_ssh_private_key_file=${env.ssh_key} ansible_python_interpreter=${env.python} ansible_become=${env.become}`
+            );
+        }
     });
     return inventory.join('\n');
 }
 export function generatePlaybook(tomlData: RunbookToml, debug: boolean = false): string {
-    const playbook: any[] = [];
+    const playbook: any[] = [{
+        name: tomlData.name,
+        hosts: 'managed',
+        gather_facts: false,
+        become: tomlData.env.become,
+        tasks: []
+    }];
     if (debug) {
-        playbook.push({
-            name: tomlData.name,
-            hosts: 'managed',
-            gather_facts: false,
-            become: tomlData.env.become,
-            vars: {
-                ansible_verbosity: 2 // Increase verbosity level
-            },
-            tasks: tomlData.steps.map((step: Step) => ({
-                name: step.name,
-                shell: step.command,
-                become: step.become ?? tomlData.env.become,
-                register: 'result', // Register output for debugging
-                ignore_errors: false
-            }))
-        });
-    } else {
-        playbook.push({
-            name: tomlData.name,
-            hosts: 'managed',
-            gather_facts: false,
-            become: tomlData.env.become,
-            tasks: tomlData.steps.map((step: Step) => ({
-                name: step.name,
-                shell: step.command,
-                become: step.become ?? tomlData.env.become
-            }))
-        });
+        playbook[0].vars = { ansible_verbosity: 2 };
     }
+    tomlData.steps.forEach((step: Step) => {
+        if (step.msg) {
+            playbook[0].tasks.push({
+                name: `Print: ${step.name}`,
+                debug: {
+                    msg: step.msg
+                }
+            });
+        } else {
+            const task: any = {
+                name: step.name,
+                become: step.become ?? tomlData.env.become
+            };
+            if (step.stdin) {
+                task['command'] = {
+                    cmd: step.command,
+                    stdin: step.stdin
+                };
+            } else {
+                task['shell'] = step.command;
+            }
+            if (debug) {
+                task.register = 'result';
+                task.ignore_errors = false;
+            }
+            playbook[0].tasks.push(task);
+        }
+    });
     return YAML.stringify(playbook);
 }
 export function writeFiles(tomlData: RunbookToml, outputDir: string, debug: boolean = false) {
@@ -133,8 +146,10 @@ export type Env = {
 export type HostEntry = { addr: string; env?: Env };
 export type Step = {
     name: string;
-    command: string;
+    command?: string;
     become?: boolean;
+    stdin?: string;
+    msg?: string;
 };
 export type RunbookToml = {
     name: string;
