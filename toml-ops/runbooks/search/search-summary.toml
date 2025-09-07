@@ -6,15 +6,33 @@ hosts = [{ addr = "localhost", env = { become = false } }]
 
 [env]
 python = "/usr/bin/python3"
+PROJECT_ROOT = "."
+
+
+[[steps]]
+name = "clean up generated files"
+command = "rm -rf ./generated"
 
 [[steps]]
 name = "run google search query"
-command = "node /home/peter/Codes/git/gitlab1/ai-agents-apps/tools/search-run.mjs"
+command = "node $PROJECT_ROOT/tools/search-run.mjs"
 
 [[steps]]
-name = "process and display results"
+name = "extract links"
 command = "echo {{ result.stdout | to_json }} | jq -r '.[].link'"
 
 [[steps]]
-name = "show message"
-msg = "{{ result.stdout }}"
+name = "scrape each link"
+command = "node --experimental-network-imports $PROJECT_ROOT/tools/scrape/scrape-run.mjs {{ item }} ocr"
+loop = "{{ result.stdout_lines }}"
+
+[[steps]]
+name = "summarize all scraped results"
+command = '''
+  for file in ./generated/md-pages/*.md; do
+    if [ -f "$file" ]; then
+      echo "Processing file: $file"
+      node --experimental-network-imports $PROJECT_ROOT/tools/summary/summary-run.mjs "$file"
+    fi
+  done
+  '''
