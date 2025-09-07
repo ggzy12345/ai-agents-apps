@@ -1,0 +1,21 @@
+name = "search"
+description = "Start search"
+debug = true
+
+hosts = [{ addr = "localhost", env = { become = false } }]
+
+[env]
+python = "/usr/bin/python3"
+PROJECT_ROOT = "."
+
+[[steps]]
+name = "run google search query"
+command = "node $PROJECT_ROOT/tools/search-run.mjs"
+
+[[steps]]
+name = "process and display results"
+command = "echo {{ result.stdout | to_json }} | jq -r '.[].link'"
+
+[[steps]]
+name = "show message"
+msg = "{{ result.stdout }}"

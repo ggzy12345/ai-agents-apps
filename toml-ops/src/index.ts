@@ -38,11 +38,25 @@ export function generatePlaybook(tomlData: RunbookToml, debug: boolean = false):
         tasks: []
     }];
 
+    const envVars: Record<string, string> = {};
+    for (const [key, value] of Object.entries(tomlData.env)) {
+        if (typeof value === 'string') {
+            envVars[key] = value;
+        }
+    }
+
     if (debug) {
         playbook[0].vars = { ansible_verbosity: 2 };
     }
 
-    tomlData.steps.forEach((step: Step) => {
+    if (Object.keys(envVars).length > 0) {
+        if (!playbook[0].vars) {
+            playbook[0].vars = {};
+        }
+        playbook[0].vars.env_vars = envVars;
+    }
+
+    tomlData.steps.forEach((step: Step, index: number) => {
         if (step.msg) {
             playbook[0].tasks.push({
                 name: `Print: ${step.name}`,
@@ -56,27 +70,61 @@ export function generatePlaybook(tomlData: RunbookToml, debug: boolean = false):
                 become: step.become ?? tomlData.env.become
             };
 
-            if (step.stdin) {
-                // Use command module with stdin
-                task['command'] = {
-                    cmd: step.command,
-                    stdin: step.stdin
-                };
-            } else {
-                // Use shell module
-                task['shell'] = step.command;
+            let processedCommand = step.command || '';
+            if (step.command && Object.keys(envVars).length > 0) {
+                for (const [key, value] of Object.entries(envVars)) {
+                    processedCommand = processedCommand.replace(
+                        new RegExp(`\\$${key}`, 'g'),
+                        value
+                    );
+                }
             }
 
+            if (processedCommand.includes('\n')) {
+                task['ansible.builtin.shell'] = {
+                    cmd: processedCommand
+                };
+            } else {
+                if (step.stdin) {
+                    task['command'] = {
+                        cmd: processedCommand,
+                        stdin: step.stdin
+                    };
+                } else {
+                    task['shell'] = processedCommand;
+                }
+            }
+
+            if (step.loop) {
+                let processedLoop = step.loop;
+                if (Object.keys(envVars).length > 0) {
+                    for (const [key, value] of Object.entries(envVars)) {
+                        processedLoop = processedLoop.replace(
+                            new RegExp(`\\$${key}`, 'g'),
+                            value
+                        );
+                    }
+                }
+                task['loop'] = processedLoop;
+            }
 
             task.register = 'result';
             task.ignore_errors = false;
-
-
             playbook[0].tasks.push(task);
         }
     });
 
-    return YAML.stringify(playbook);
+    const doc = new YAML.Document();
+    doc.contents = playbook as any;
+    YAML.visit(doc, {
+        Scalar(key, node: any) {
+            if (typeof node.value === 'string' && node.value.includes('\n')) {
+                node.type = 'SCALAR' as any;
+                node.style = '|' as any;
+            }
+        }
+    });
+    return doc.toString();
 }
 
 export function writeFiles(tomlData: RunbookToml, outputDir: string, debug: boolean = false) {

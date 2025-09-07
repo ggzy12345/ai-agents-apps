@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "browser": "npx playwright install chromium",
+    "test": "playwright test"
+  },
+  "dependencies": {
+    "playwright": "^1.55.0",
+    "tesseract.js": "^6.0.1"
+  }
+}

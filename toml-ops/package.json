@@ -1,6 +1,6 @@
 {
     "name": "toml-ops",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "license": "MIT",
     "description": "CLI to generate and run Ansible playbooks from TOML",
     "repository": {
