@@ -102,4 +102,4 @@ This tool dramatically enhances AI agent capabilities by:
 - **Safe Abstraction**: Agents don't need to understand Ansible internals to perform complex operations
 
 ## Predefined tools 
-Clone the project and copy the tools to use in our run books: https://github.com/ggzy12345/ai-agents-apps/tree/main/tools
+Clone the project and copy the tools to use in our runbooks: https://github.com/ggzy12345/ai-agents-apps/tree/main/tools
