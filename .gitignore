@@ -11,3 +11,6 @@ toml-ops/node_modules/
 toml-ops/dist/
 toml-ops/generated/
 toml-ops/runbooks/llama.cpp/generated/
+tools/scrape/ocr/node_modules/
+toml-ops/runbooks/search/generated/
+tools/scrape/eng.traineddata
