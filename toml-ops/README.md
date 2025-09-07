@@ -100,3 +100,6 @@ This tool dramatically enhances AI agent capabilities by:
 - **Structured Output**: Consistent format that agents can easily parse and generate
 - **Powerful Execution**: Converts simple declarations into robust infrastructure operations
 - **Safe Abstraction**: Agents don't need to understand Ansible internals to perform complex operations
+
+## Predefined tools 
+Clone the project and copy the tools to use in our run books: https://github.com/ggzy12345/ai-agents-apps/tree/main/tools
