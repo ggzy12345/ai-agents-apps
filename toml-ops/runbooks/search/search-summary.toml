@@ -8,6 +8,9 @@ hosts = [{ addr = "localhost", env = { become = false } }]
 python = "/usr/bin/python3"
 PROJECT_ROOT = "."
 
+[[steps]]
+name = "copy tools"
+command = "cp -fr ../../ai-agents-apps/tools ./tools"
 
 [[steps]]
 name = "clean up generated files"
@@ -23,7 +26,8 @@ command = "echo {{ result.stdout | to_json }} | jq -r '.[].link'"
 
 [[steps]]
 name = "scrape each link"
-command = "node --experimental-network-imports $PROJECT_ROOT/tools/scrape/scrape-run.mjs {{ item }} ocr"
+command = "node --experimental-network-imports $PROJECT_ROOT/tools/scrape/scrape-run.mjs {{ item }} html"
+#command = "node --experimental-network-imports $PROJECT_ROOT/tools/scrape/scrape-run.mjs {{ item }} ocr"
 loop = "{{ result.stdout_lines }}"
 
 [[steps]]
